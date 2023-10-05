@@ -25,5 +25,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v5
         with:
+          context: "{{defaultContext}}:/src/TheUnnamed"
+          file: TheUnnamed.Web.Blazor/Dockerfile
           push: true
-          tags: thomasley/theunnamed:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/theunnamed:latest

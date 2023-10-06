@@ -6,11 +6,14 @@ services:
     volumes:
       - ./.docker/blazor_data:/data
       - ./localhost.pfx:/https/localhost.pfx
+      - ./appsettings.json:/app/appsettings.json
     environment:
       - AzureAD__ClientSecret=
+      - DatabaseConfiguration__ConnectionString=
+      - StorageConfiguration__ConnectionString=
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password01
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/localhost.pfx
     ports:
-      - 8080:80
-      - 8443:443
+      - 8080:80/tcp
+      - 8443:443/tcp

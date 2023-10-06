@@ -1,0 +1,47 @@
+﻿@page "/ListMyDocuments"
+
+@using TheUnnamed.Web.Blazor.Service
+@inject ListMyDocumentsService Service
+@inject IJSRuntime JS
+
+<PageTitle>My Documents</PageTitle>
+
+@if (_model == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Filemap</th>
+            <th>Hash</th>
+            <th>Options</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var document in _model.Documents)
+        {
+            <tr>
+                <td>&nbsp;@document.Title</td>
+                <td>@document.Filemap.Title</td>
+                <td>@document.Hash?[..8]</td>
+                <td>
+                    <a href="/api/download/@document.Uuid">Download</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ListMyDocumentsViewModel? _model;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = await Service.GetDocuments();
+    }
+}

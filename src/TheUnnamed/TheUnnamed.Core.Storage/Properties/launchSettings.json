@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TheUnnamed.Core.Storage": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+﻿@page "/FilemapOverview"
+
+<PageTitle>FilemapOverview</PageTitle>
+
+<div class="form-group">
+    <a class="btn btn-success" href="Filemap/Create"><i class="oi oi-plus"></i> Create New</a>
+</div>
+
+@if (Filemaps == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Options</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entity in Filemaps)
+            {
+                <tr>
+                    <td>&nbsp;@entity.Title</td>
+                    <td>@entity.Uuid</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

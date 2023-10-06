@@ -1,0 +1,24 @@
+﻿@page "/filemap/Create"
+@using TheUnnamed.Core.Database.Repository
+@inject IFilemapRepository Repository
+
+<PageTitle>Create Filemap</PageTitle>
+
+<Form ButtonText="Create Developer" Filemap="@_filemap" AllFilemaps="GetAllFilemaps()" OnValidSubmit="@CreateFilemap">
+</Form>
+
+@code {
+    WriteFilemapEntity _filemap = new();
+
+    async Task CreateFilemap()
+    {
+        var closure = new WriteFilemapEntity() { ParentId = _filemap.ParentId == Guid.Empty ? null : _filemap.ParentId, Title = _filemap.Title };
+        _filemap = new WriteFilemapEntity();
+        Repository.CreateFilemap(closure);
+    }
+
+    Dictionary<Guid, string> GetAllFilemaps()
+    {
+        return new Dictionary<Guid, string>(new Dictionary<Guid, string>() { { Guid.Empty, "" } }.Concat(Repository.GetAllFilemaps().Result.ToDictionary(x => x.Uuid, y => y.Title)));
+    }
+}

@@ -17,24 +17,12 @@ namespace TheUnnamed.Web.Blazor.Controller
             _storage = storage ?? throw new ArgumentNullException(nameof(storage));
         }
 
-        [HttpGet("{uuid}")]
-        public async Task<HttpResponseMessage> Generate(Guid uuid)
+        [HttpGet("{uuid}/{filename}")]
+        public async Task<ActionResult> Generate(Guid uuid, string filename)
         {
             var docInfo = await _storage.GetDocument(uuid);
 
-            var result = new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new ByteArrayContent(docInfo.Stream)
-            };
-            result.Content.Headers.ContentDisposition =
-                new ContentDispositionHeaderValue("attachment")
-                {
-                    FileName = docInfo.Filename
-                };
-            result.Content.Headers.ContentType =
-                new MediaTypeHeaderValue(docInfo.ContentType);
-
-            return result;
+            return File(docInfo.Stream, docInfo.ContentType, filename);
         }
     }
 }

@@ -1,0 +1,16 @@
+version: '3.4'
+
+services:
+  theunnamed.web.blazor:
+    image: thomasley/theunnamed:latest
+    volumes:
+      - ./.docker/blazor_data:/data
+      - ./localhost.pfx:/https/localhost.pfx
+    environment:
+      - AzureAD__ClientSecret=
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password01
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/localhost.pfx
+    ports:
+      - 8080:80
+      - 8443:443

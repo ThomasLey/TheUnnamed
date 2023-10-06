@@ -1,20 +1,30 @@
 ﻿@page "/filemap/Create"
 @using TheUnnamed.Core.Database.Repository
+@using Microsoft.Extensions.Azure
 @inject IFilemapRepository Repository
 
 <PageTitle>Create Filemap</PageTitle>
 
-<Form ButtonText="Create Developer" Filemap="@_filemap" AllFilemaps="GetAllFilemaps()" OnValidSubmit="@CreateFilemap">
+<Form ButtonText="Create Developer" Filemap="@_filemap" AllFilemaps="_filemaps" OnValidSubmit="@CreateFilemap">
 </Form>
 
 @code {
     WriteFilemapEntity _filemap = new();
+    private Dictionary<Guid, string> _filemaps;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _filemaps = GetAllFilemaps();
+    }
 
     async Task CreateFilemap()
     {
         var closure = new WriteFilemapEntity() { ParentId = _filemap.ParentId == Guid.Empty ? null : _filemap.ParentId, Title = _filemap.Title };
         _filemap = new WriteFilemapEntity();
-        Repository.CreateFilemap(closure);
+        var result = await Repository.CreateFilemap(closure);
+        _filemaps.Add(result.Uuid, result.Title);
     }
 
     Dictionary<Guid, string> GetAllFilemaps()

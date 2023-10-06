@@ -29,7 +29,7 @@ else
                 <td>@document.Filemap.Title</td>
                 <td>@document.Hash?[..8]</td>
                 <td>
-                    <a href="/api/download/@document.Uuid">Download</a>
+                    <a href="/api/download/@document.Uuid/@document.Filename">Download</a>
                 </td>
             </tr>
         }

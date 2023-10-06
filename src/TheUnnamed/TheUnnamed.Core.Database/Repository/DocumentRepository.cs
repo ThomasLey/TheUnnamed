@@ -51,6 +51,7 @@ internal class DocumentRepository : IDocumentRepository
             {
                 Uuid = x.Uuid,
                 Title = x.Title,
+                Filename = x.Title, // todo fixme with a proper column
                 // filemap with lookup? Filemap = new FilemapEntity() { Uuid = x.Filemap.Uuid, ParentId = x.Filemap.ParentId, Title = x.Filemap.Title },
                 Filemap = new ReadFilemapEntity() { Uuid = x.Filemap.Uuid, Title = x.Filemap.Title },
                 Owner = new ReadUserEntity

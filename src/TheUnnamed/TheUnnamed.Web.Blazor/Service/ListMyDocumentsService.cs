@@ -31,6 +31,7 @@ public class ListMyDocumentsViewModel
 public class DocumentViewModel
 {
     public string? Title { get; set; }
+    public string? Filename { get; set; }
     public FilemapViewModel? Filemap { get; set; }
     public string? Hash { get; set; }
     public Guid Uuid { get; set; }
@@ -61,6 +62,7 @@ public static class ListInboxViewModelExtensions
             Filemap = new FilemapViewModel() { Title = d.Filemap.Title, Uuid = d.Filemap.Uuid },
             Hash = d.Hash,
             Title = d.Title,
+            Filename = d.Filename,
             Uuid = d.Uuid
         };
     }

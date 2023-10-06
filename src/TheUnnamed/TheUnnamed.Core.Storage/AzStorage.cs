@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 using Azure.Data.Tables;
 using TheUnnamed.Core.Storage.Config;
 using System.Net.Sockets;
+using System.ComponentModel;
+using System.IO;
 
 namespace TheUnnamed.Core.Storage
 {
@@ -26,7 +28,7 @@ namespace TheUnnamed.Core.Storage
 
             var tableClient = tableServiceClient.GetTableClient(tableName: "Inventory");
             await tableClient.CreateIfNotExistsAsync();
-            var blobContainerClient = await EnsureBucket(filemap, blobServiceClient, tableClient);
+            var blobContainerClient = await EnsureBucket(filemap, blobServiceClient, tableServiceClient);
 
             // hack: this can only add new documents!
             var res = await blobContainerClient.UploadBlobAsync(document.Filename, documentStream);
@@ -66,18 +68,19 @@ namespace TheUnnamed.Core.Storage
 
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(document.Bucket);
             var blobClient = blobContainerClient.GetBlobClient(document.Filename);
-            byte[] content = Array.Empty<byte>();
-
-            if (blobClient.ExistsAsync().Result)
+            if (!await blobClient.ExistsAsync())
             {
-                using var ms = new MemoryStream();
-                await blobClient.DownloadToAsync(ms);
-                content= ms.ToArray();
+                throw new FileNotFoundException($"Cannot find file {document.Filename} in bucket {document.Bucket}");
             }
+
+            var stream = new MemoryStream();
+            await blobClient.DownloadToAsync(stream);
+            var contents = stream.ToArray();
+
             return new DocumentLocationDto()
             {
                 ContentType = document.ContentType,
-                Stream = content,
+                Stream = contents,
                 Filename = document.Filename
             };
         }
@@ -86,12 +89,15 @@ namespace TheUnnamed.Core.Storage
         private async Task<BlobContainerClient> EnsureBucket(
             FilemapModel filemap,
             BlobServiceClient blobServiceClient,
-            TableClient tableClient)
+            TableServiceClient tableServiceClient)
         {
+            var tableClient = tableServiceClient.GetTableClient(tableName: "FilemapBuckets");
+            await tableClient.CreateIfNotExistsAsync();
+
             // lets try to get the bucket from azure table
-            var storedFilemapLoc = tableClient.GetEntityIfExists<FilemapLocation>("FilemapWithoutPartition", filemap.Uuid.ToString());
+            var storedFilemapLoc = tableClient.GetEntityIfExists<FilemapLocation>(filemap.Uuid.ToString()[..4], filemap.Uuid.ToString());
             var bucket = storedFilemapLoc.HasValue ? storedFilemapLoc.Value.Bucket : CreateBucketFromFilemap(filemap);
-    
+
             // in case filemap location is not stored in table, do it now
             if (!storedFilemapLoc.HasValue)
             {
@@ -100,7 +106,7 @@ namespace TheUnnamed.Core.Storage
                     FilemapUuid = filemap.Uuid,
                     Bucket = bucket,
 
-                    PartitionKey = "FilemapWithoutPartition",
+                    PartitionKey = filemap.Uuid.ToString()[..4],
                     RowKey = filemap.Uuid.ToString(),
                     Timestamp = DateTimeOffset.UtcNow
                 };
@@ -108,7 +114,7 @@ namespace TheUnnamed.Core.Storage
             }
 
             // lets try to get an existing container
-            var result = blobServiceClient.GetBlobContainerClient(bucket) 
+            var result = blobServiceClient.GetBlobContainerClient(bucket)
                          ?? (await blobServiceClient.CreateBlobContainerAsync(bucket)).Value;
 
             await result.CreateIfNotExistsAsync();

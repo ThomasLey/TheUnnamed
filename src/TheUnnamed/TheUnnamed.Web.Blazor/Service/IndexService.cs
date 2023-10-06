@@ -9,22 +9,6 @@ using Index = TheUnnamed.Web.Blazor.Pages.Index;
 
 namespace TheUnnamed.Web.Blazor.Service;
 
-public class FilemapOverviewService
-{
-    private readonly ILogger<IndexService> _logger;
-    private readonly IFilemapRepository _database;
-
-    public FilemapOverviewService(ILogger<IndexService> logger, IFilemapRepository database, AuthenticationStateProvider authentication)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _database = database ?? throw new ArgumentNullException(nameof(database));
-    }
-    public async Task<Dictionary<Guid, string>> GetFilemaps()
-    {
-        return (await _database.GetAllFilemaps()).ToDictionary(x => x.Uuid, x => x.Title);
-    }
-}
-
 public class IndexService
 {
     private readonly ILogger<IndexService> _logger;
@@ -46,7 +30,10 @@ public class IndexService
         _logger.LogDebug($"Uploading '{file.Name}' to bucket '{documentInfo.Filemap}'");
 
         // here I need to validate the hash!
-        await using var hashStream = file.OpenReadStream(MaxFileSize);
+        await using var fileStream = file.OpenReadStream(MaxFileSize);
+        await using var hashStream = new MemoryStream();
+        await fileStream.CopyToAsync(hashStream);
+
         var hash = await GetHashAsync<SHA256CryptoServiceProvider>(hashStream);
         var hashExists = _database.CheckHashExists(hash, out Guid documentUuid);
         if (hashExists)
@@ -78,8 +65,8 @@ public class IndexService
         {
             //wait using var uploadStream = file.OpenReadStream(MaxFileSize);
             await _storage.UploadToBucketAsync(
-                hashStream, 
-                new DocumentModel() { Filename = file.Name, Uuid = documentId, ContentType = file.ContentType}, 
+                hashStream,
+                new DocumentModel() { Filename = file.Name, Uuid = documentId, ContentType = file.ContentType },
                 new FilemapModel() { Title = filemap.Title, Uuid = filemap.Uuid });
             _logger.LogDebug($"Document {documentInfo.Filename} uploaded successfully.");
         }
@@ -101,24 +88,22 @@ public class IndexService
     public static async Task<string> GetHashAsync<T>(Stream stream)
         where T : HashAlgorithm, new()
     {
-        StringBuilder sb;
+        stream.Position = 0;
+        using var algorithm = new T();
+        var buffer = new byte[8192];
+        int bytesRead;
 
-        using (var algo = new T())
-        {
-            var buffer = new byte[8192];
-            int bytesRead;
+        // compute the hash on 8KiB blocks
+        while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) != 0)
+            algorithm.TransformBlock(buffer, 0, bytesRead, buffer, 0);
+        algorithm.TransformFinalBlock(buffer, 0, bytesRead);
 
-            // compute the hash on 8KiB blocks
-            while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) != 0)
-                algo.TransformBlock(buffer, 0, bytesRead, buffer, 0);
-            algo.TransformFinalBlock(buffer, 0, bytesRead);
+        // build the hash string
+        var sb = new StringBuilder(algorithm.HashSize / 4);
+        foreach (var b in algorithm.Hash)
+            sb.AppendFormat("{0:x2}", b);
 
-            // build the hash string
-            sb = new StringBuilder(algo.HashSize / 4);
-            foreach (var b in algo.Hash)
-                sb.AppendFormat("{0:x2}", b);
-        }
-
-        return sb?.ToString();
+        stream.Position = 0;
+        return sb.ToString();
     }
 }

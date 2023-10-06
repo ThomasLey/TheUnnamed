@@ -4,6 +4,7 @@ public class ReadDocumentEntity
 {
     public Guid Uuid { get; init; } = Guid.Empty;
     public string Title { get; init; } = null!;
+    public string Filename { get; init; } = null!;
     public ReadFilemapEntity Filemap { get; init; } = null!;
     public ReadUserEntity Owner { get; init; } = null!;
     public string Hash { get; init; } = null!;

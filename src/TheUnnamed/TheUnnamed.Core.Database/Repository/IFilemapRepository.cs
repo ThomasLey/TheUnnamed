@@ -4,5 +4,5 @@ public interface IFilemapRepository
 {
     Task<IEnumerable<ReadFilemapEntity>> GetAllFilemaps();
 
-    Task CreateFilemap(WriteFilemapEntity entity);
+    Task<ReadFilemapEntity> CreateFilemap(WriteFilemapEntity entity);
 }

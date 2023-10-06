@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
-using TheUnnamed.Web.Blazor.Data;
+using TheUnnamed.Core.Database;
+using TheUnnamed.Core.Database.Config;
+using TheUnnamed.Core.Storage;
+using TheUnnamed.Core.Storage.Config;
+using TheUnnamed.Web.Blazor.Jobs;
+using TheUnnamed.Web.Blazor.Service;
 
 namespace TheUnnamed.Web.Blazor
 {
@@ -15,8 +15,28 @@ namespace TheUnnamed.Web.Blazor
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            // todo: tley: add for environmane name
+            builder.Configuration
+                //.AddJsonFile($"appsettings.{CurrentEnvironment.EnvironmentName}.json", optional: true) //load environment settings
+                .AddJsonFile($"appsettings.Development.json", optional: true)
+                .AddEnvironmentVariables(prefix: "tup_");
 
-            var initialScopes = builder.Configuration["DownstreamApi:Scopes"]?.Split(' ') ?? builder.Configuration["MicrosoftGraph:Scopes"]?.Split(' ');
+            var initialScopes = builder.Configuration["DownstreamApi:Scopes"]?.Split(' ')
+                ?? builder.Configuration["MicrosoftGraph:Scopes"]?.Split(' ');
+
+            // Get the configuration
+            var dbConfig = builder.Configuration.GetSection(nameof(DatabaseConfiguration)).Get<DatabaseConfiguration>()
+                ?? throw new NullReferenceException("Database configuration cannot be resolved");
+            builder.Services.AddSingleton(dbConfig);
+            var fsConfig = builder.Configuration.GetSection(nameof(StorageConfiguration)).Get<StorageConfiguration>()
+                           ?? throw new NullReferenceException("Storage configuration cannot be resolved");
+            builder.Services.AddSingleton(fsConfig);
+
+            // enable logging.
+            builder.Services.AddLogging(logging =>
+            {
+                logging.AddConsole();
+            });
 
             // Add services to the container.
             builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
@@ -31,11 +51,29 @@ namespace TheUnnamed.Web.Blazor
             });
 
             builder.Services.AddRazorPages();
-            builder.Services.AddServerSideBlazor()
-                .AddMicrosoftIdentityConsentHandler();
-            builder.Services.AddSingleton<WeatherForecastService>();
+            builder.Services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
+            builder.Services.AddControllers();
+
+            // Adding my services for razor pages (Controller)
+            builder.Services.AddTransient<IndexService>();
+            builder.Services.AddTransient<LoginService>();
+            builder.Services.AddTransient<ListMyDocumentsService>();
+
+            // Adding my services with persistent store
+            builder.Services.AddUnnamedDatabase(dbConfig);
+            builder.Services.AddUnnamedStorage(fsConfig);
+
+            builder.Services.AddHostedService<RemoveDocumentsWithoutStream>();
 
             var app = builder.Build();
+
+            // app.UseUnnamedDatabase() to create DB
+            // app.UseUnnamedStorage() to create buckets, Storage and Tables
+
+            using var scope = app.Services.CreateScope();
+            var db = scope.ServiceProvider.GetService<DocumentsContext>();
+            db.Database.EnsureCreated();
+            scope.Dispose();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

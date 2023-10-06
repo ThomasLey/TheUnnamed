@@ -1,9 +1,75 @@
 ﻿@page "/"
+@using TheUnnamed.Web.Blazor.Service
+@inject IndexService Service
+@inject ILogger<Index> Logger
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Upload Document</h1>
 
-Welcome to your new app.
+<EditForm Model="_newDocument">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <div class="form-group">
+        <label class="">Filemap:</label>
+        <InputSelect id="filemap" class="form-control form-control-sm" @bind-Value="_newDocument.Filemap">
+            @foreach (var keyValue in _allFilemaps)
+            {
+                <option value="@keyValue.Key">@keyValue.Value</option>
+            }
+        </InputSelect>
+        <small class="form-text text-muted form-control-sm">Filemap for grouping the files into concerns</small>
+    </div>
+    <div class="form-group">
+        <label class="">Document:</label>
+        <InputFile class="form-control form-control-sm" OnChange="@LoadFile" />
+        <small class="form-text text-muted form-control-sm">Document to upload</small>
+    </div>
+</EditForm>
+<br/>
+<ul class="list-group">
+    @foreach (var item in _logMessages)
+    {
+        <li class="list-group-item list-group-item-@item.Context">@item.Message</li>
+    }
+</ul>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    private CreateDocument _newDocument = new();
+    private Dictionary<Guid, string> _allFilemaps = new();
+    private readonly List<LogMessage> _logMessages = new();
+
+    protected override void OnInitialized()
+    {
+        _allFilemaps = Service.GetFilemaps().Result;
+        base.OnInitialized();
+    }
+
+    private async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        var closureDocument = _newDocument;
+        closureDocument.Filename = e.File.Name;
+        _newDocument = new CreateDocument() { Filemap = closureDocument.Filemap };
+
+        var file = e.File;
+        try
+        {
+            await Service.ExecuteUploadAsync(file, closureDocument);
+            _logMessages.Insert(0, new LogMessage($"Document '{closureDocument.Filename}' was uploaded to '{_allFilemaps[closureDocument.Filemap]}'", "success"));
+        }
+        catch (Exception ex)
+        {
+            _logMessages.Insert(0, new LogMessage($"Error: Cannot upload document '{closureDocument.Filename}' ({ex.Message}]", "warning"));
+            Logger.LogError(ex.Message);
+        }
+    }
+
+    public record LogMessage(string Message, string Context);
+
+    public class CreateDocument
+    {
+        public Guid Filemap { get; set; }
+        public string? Filename { get; set; }
+    }
+}

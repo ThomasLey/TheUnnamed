@@ -1,0 +1,36 @@
+﻿@using TheUnnamed.Core.Database.Repository
+<PageTitle>Create Filemap</PageTitle>
+
+<EditForm Model="@Filemap" OnValidSubmit="@OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label>First Name:</label>
+        <div>
+            <InputText @bind-Value="@Filemap.Title" />
+            <ValidationMessage For="@(() => Filemap.Title)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="">Filemap:</label>
+        <InputSelect id="filemap" class="form-control form-control-sm" @bind-Value="Filemap.ParentId">
+            @foreach (var keyValue in AllFilemaps)
+            {
+                <option value="@keyValue.Key">@keyValue.Value</option>
+            }
+        </InputSelect>
+        <small class="form-text text-muted form-control-sm">Filemap for grouping the files into concerns</small>
+    </div>
+
+    <button type="submit" class="btn btn-success">
+        @ButtonText
+    </button>
+
+</EditForm>
+
+@code {
+
+    [Parameter] public WriteFilemapEntity Filemap { get; set; } = null!;
+    [Parameter] public Dictionary<Guid, string> AllFilemaps { get; set; } = null!;
+    [Parameter] public string ButtonText { get; set; } = "Save";
+    [Parameter] public EventCallback OnValidSubmit { get; set; }
+}

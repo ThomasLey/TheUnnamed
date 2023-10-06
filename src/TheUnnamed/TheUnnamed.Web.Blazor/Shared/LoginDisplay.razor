@@ -1,4 +1,7 @@
-﻿<AuthorizeView>
+﻿@using TheUnnamed.Web.Blazor.Service
+@inject LoginService _service
+
+<AuthorizeView>
     <Authorized>
         Hello, @context.User.Identity?.Name!
         <a href="MicrosoftIdentity/Account/SignOut">Log out</a>
@@ -7,3 +10,12 @@
         <a href="MicrosoftIdentity/Account/SignIn">Log in</a>
     </NotAuthorized>
 </AuthorizeView>
+
+@code
+{
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (firstRender) _service.EnsureUser();
+    }
+}

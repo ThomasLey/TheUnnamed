@@ -68,6 +68,7 @@ namespace TheUnnamed.Core.Storage
 
             var blobContainerClient = blobServiceClient.GetBlobContainerClient(document.Bucket);
             var blobClient = blobContainerClient.GetBlobClient(document.Filename);
+
             if (!await blobClient.ExistsAsync())
             {
                 throw new FileNotFoundException($"Cannot find file {document.Filename} in bucket {document.Bucket}");

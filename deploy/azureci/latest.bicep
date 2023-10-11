@@ -38,6 +38,11 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
               port: port
               protocol: 'TCP'
             }
+          environmentVariables: [
+            {
+              name: 'ASPNETCORE_URL'
+              value: 'https://+:443'
+            }
           ]
           resources: {
             requests: {

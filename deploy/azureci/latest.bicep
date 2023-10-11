@@ -44,6 +44,14 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
               name: 'ASPNETCORE_URL'
               value: 'https://+:443'
             }
+            {
+              name: 'DatabaseConfiguration__ConnectionString'
+              value: '/data/db'
+            }
+            {
+              name: 'StorageConfiguration__ConnectionString'
+              value: '/data/files'
+            }
           ]
           resources: {
             requests: {

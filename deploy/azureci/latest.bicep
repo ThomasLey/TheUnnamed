@@ -24,9 +24,9 @@ param memoryInGb int = 2
 ])
 param restartPolicy string = 'Never'
 
-param subscription = subscription().subscriptionId
-param securePassword = getSecret(subscription, resourceGroup().name, 'kv-eGov-sonarqube', 'ebookstorecertpwd')
-param secureClientId = getSecret(subscription, resourceGroup().name, 'kv-eGov-sonarqube', 'ebookstoreclientid')
+param subscription string = subscription().subscriptionId
+param securePassword string = getSecret(subscription, resourceGroup().name, 'kv-eGov-sonarqube', 'ebookstorecertpwd')
+param secureClientId string = getSecret(subscription, resourceGroup().name, 'kv-eGov-sonarqube', 'ebookstoreclientid')
 
 resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01' = {
   name: name

@@ -1,5 +1,5 @@
 @description('Name for the container group')
-param name string = 'acilinuxpublicipcontainergroup'
+param name string = 'ci-ebookstore'
 
 @description('Location for all resources.')
 param location string = resourceGroup().location
@@ -24,9 +24,17 @@ param memoryInGb int = 2
 ])
 param restartPolicy string = 'Never'
 
+param subscription = subscription().subscriptionId
+param securePassword = getSecret(subscription, resourceGroup().name, 'kv-eGov-sonarqube', 'ebookstorecertpwd')
+param secureClientId = getSecret(subscription, resourceGroup().name, 'kv-eGov-sonarqube', 'ebookstoreclientid')
+
 resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01' = {
   name: name
   location: location
+  tags: {
+      maintainer: 'Thomas Ley'
+      Purpose: 'TheUnnamedPoc'
+  }
   properties: {
     containers: [
       {
@@ -41,8 +49,12 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
           ]
           environmentVariables: [
             {
+              name: 'AzureAD__ClientSecret'
+              value: secureClientId
+            }
+            {
               name: 'ASPNETCORE_URL'
-              value: 'https://+:443'
+              value: 'https://+:443;https://+:443'
             }
             {
               name: 'DatabaseConfiguration__ConnectionString'
@@ -51,6 +63,14 @@ resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-09-01'
             {
               name: 'StorageConfiguration__ConnectionString'
               value: '/data/files'
+            }
+            {
+              name: 'ASPNETCORE_Kestrel__Certificates__Default__Password'
+              value: securePassword
+            }
+            {
+              name: 'ASPNETCORE_Kestrel__Certificates__Default__Path'
+              value: '/https/certificate.pfx'
             }
           ]
           resources: {

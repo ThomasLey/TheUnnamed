@@ -1,12 +1,8 @@
-﻿using System.Reflection;
-using Azure.Storage.Blobs;
+﻿using Azure.Storage.Blobs;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Azure.Data.Tables;
 using TheUnnamed.Core.Storage.Config;
-using System.Net.Sockets;
-using System.ComponentModel;
-using System.IO;
 
 namespace TheUnnamed.Core.Storage
 {

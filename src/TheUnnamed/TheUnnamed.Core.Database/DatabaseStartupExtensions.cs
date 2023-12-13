@@ -6,7 +6,8 @@ using TheUnnamed.Core.Database.Repository;
 [assembly: InternalsVisibleTo("TheUnnamed.Core.Database.Tests")]
 namespace TheUnnamed.Core.Database
 {
-
+    // todo this will move to the blazor project or web layer. but here can be a method to return the types which need to be registered.
+    // we need to register the dbcontext because it makes sense ;) But the context is only known in this project
     public static class DatabaseStartupExtensions
     {
         public static IServiceCollection AddUnnamedDatabase(this IServiceCollection services, DatabaseConfiguration dbConfig)

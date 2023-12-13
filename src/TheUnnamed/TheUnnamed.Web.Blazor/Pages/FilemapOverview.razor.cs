@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using TheUnnamed.Core.Database.Filter;
 using TheUnnamed.Core.Database.Repository;
-using TheUnnamed.Web.Blazor.Service;
 
 namespace TheUnnamed.Web.Blazor.Pages
 {

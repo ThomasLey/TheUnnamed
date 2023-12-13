@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components.Authorization;
-using System.Collections;
 using TheUnnamed.Core.Database.Filter;
 using TheUnnamed.Core.Database.Repository;
 

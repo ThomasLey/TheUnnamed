@@ -13,6 +13,22 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheUnnamed.Core.Storage", "TheUnnamed.Core.Storage\TheUnnamed.Core.Storage.csproj", "{A432C058-8128-4D5E-AD38-B82708C985DA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheUnnamed.Domain", "..\TheUnnamed.Domain\TheUnnamed.Domain.csproj", "{136E1D70-F0FB-400B-93E8-C78A3F5D61FB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{305AB31A-972B-4BB8-805A-BA3CA6A8C0F8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{4DFF1F8C-E238-42AF-A920-AD5E682CADAE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{83F17F4E-FD2D-49AF-AA6C-4B0474BD3F8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{8BCD06AA-AD10-434C-BE32-23BE19408C4F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheUnnamed.Infrastructure.Database", "..\TheUnnamed.Infrastructure.Database\TheUnnamed.Infrastructure.Database.csproj", "{E5A570AB-20E7-4041-BAAF-36AF465BE248}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheUnnamed.Infrastructure.Storage", "..\TheUnnamed.Infrastructure.Storage\TheUnnamed.Infrastructure.Storage.csproj", "{9E94685F-211B-4A6A-B453-E032C5ACE0DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheUnnamed.Application", "..\TheUnnamed.Application\TheUnnamed.Application.csproj", "{8FF10044-77CC-43C3-A342-5242B95BEE59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,9 +55,31 @@ Global
 		{A432C058-8128-4D5E-AD38-B82708C985DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A432C058-8128-4D5E-AD38-B82708C985DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A432C058-8128-4D5E-AD38-B82708C985DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{136E1D70-F0FB-400B-93E8-C78A3F5D61FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{136E1D70-F0FB-400B-93E8-C78A3F5D61FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{136E1D70-F0FB-400B-93E8-C78A3F5D61FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{136E1D70-F0FB-400B-93E8-C78A3F5D61FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5A570AB-20E7-4041-BAAF-36AF465BE248}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5A570AB-20E7-4041-BAAF-36AF465BE248}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5A570AB-20E7-4041-BAAF-36AF465BE248}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5A570AB-20E7-4041-BAAF-36AF465BE248}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E94685F-211B-4A6A-B453-E032C5ACE0DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E94685F-211B-4A6A-B453-E032C5ACE0DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E94685F-211B-4A6A-B453-E032C5ACE0DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E94685F-211B-4A6A-B453-E032C5ACE0DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FF10044-77CC-43C3-A342-5242B95BEE59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FF10044-77CC-43C3-A342-5242B95BEE59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FF10044-77CC-43C3-A342-5242B95BEE59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FF10044-77CC-43C3-A342-5242B95BEE59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{136E1D70-F0FB-400B-93E8-C78A3F5D61FB} = {305AB31A-972B-4BB8-805A-BA3CA6A8C0F8}
+		{E5A570AB-20E7-4041-BAAF-36AF465BE248} = {83F17F4E-FD2D-49AF-AA6C-4B0474BD3F8D}
+		{9E94685F-211B-4A6A-B453-E032C5ACE0DE} = {83F17F4E-FD2D-49AF-AA6C-4B0474BD3F8D}
+		{8FF10044-77CC-43C3-A342-5242B95BEE59} = {4DFF1F8C-E238-42AF-A920-AD5E682CADAE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15126170-0C93-421A-B1B9-FCBFD0F23126}

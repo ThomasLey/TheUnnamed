@@ -1,7 +1,4 @@
-﻿using Azure.Storage.Blobs;
-using Microsoft.AspNetCore.Mvc;
-using System.Net;
-using System.Net.Http.Headers;
+﻿using Microsoft.AspNetCore.Mvc;
 using TheUnnamed.Core.Storage;
 
 namespace TheUnnamed.Web.Blazor.Controller
